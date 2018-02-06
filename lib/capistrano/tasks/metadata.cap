@@ -1,0 +1,25 @@
+namespace :metadata do
+  task :write do
+    on release_roles(:all) do |host|
+      require 'json'
+
+      File.open(release_path.join(fetch(:metadata_path)), 'w') do |f|
+        metadata_hash = {
+          repo_url: fetch(:repo_url),
+          branch: fetch(:branch),
+          revision: fetch(:current_revision),
+          user: local_user,
+          date: fetch(:release_timestamp)
+        }
+
+        f.puts JSON.generate(metadata_hash)
+      end
+    end
+  end
+end
+
+namespace :load do
+  task :defaults do
+    set :metadata_path, '.capistrano_metadata.json'
+  end
+end
